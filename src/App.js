@@ -9,7 +9,7 @@ function App() {
     <Container className="App">
       {comments.map((c) => {
         const replies = c.replies.map((reply) => {
-          return <div style={{borderLeft:" 1px solid gray", paddingLeft:"20px",}}><Comment key={reply.id} comment={reply} type="reply" /></div>;
+          return <div style={{borderLeft:" 3px solid var(--light-gray)", paddingLeft:"20px", marginLeft: "25px"}}><Comment key={reply.id} comment={reply} type="reply" /></div>;
         });
         return (
           <div key={c.id} style={{display:"flex", flexDirection: "column",alignItems: "flex-end"}}>

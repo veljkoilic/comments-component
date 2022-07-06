@@ -3,7 +3,7 @@ import { useState } from "react";
 import styled from "styled-components";
 import { mobile } from "../responsive";
 
-export const Comment = ({ comment, type, myComment, handleVote}) => {
+export const Comment = ({ comment, type, myComment, handleVote, parentComment}) => {
  
   return (
     <Container
@@ -12,9 +12,9 @@ export const Comment = ({ comment, type, myComment, handleVote}) => {
     >
       <Left>
         <Votes>
-          <span onClick={()=>handleVote("inc", comment.id, type)}>+</span>
+          <span onClick={()=>handleVote("inc", comment.id, type, parentComment)}>+</span>
           <span>{comment.score}</span>
-          <span onClick={()=>handleVote("dec", comment.id, type)}>-</span>
+          <span onClick={()=>handleVote("dec", comment.id, type, parentComment)}>-</span>
         </Votes>
         <TopActions className="left">
           <Reply>

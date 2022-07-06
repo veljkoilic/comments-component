@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Comment } from "./components/Comment";
 import data from "./data.json";
@@ -6,24 +6,52 @@ import data from "./data.json";
 function App() {
   const [comments, setComments] = useState(data.comments);
   const [user, setUser] = useState(data.currentUser)
+  const addComment = (event) => {
+    event.preventDefault()
+    const textValue = event.target.firstChild.value
+    setComments(prev=>{
+      return [...prev,{
+        id: Math.max(...prev.map(o => o.id)) + 1,
+        content: textValue,
+        createdAt: "just now",
+        score: 0,
+        user,
+        replies: []
+    }]})
+  }
+  const handleVote = (type) => {
+    type === "inc" ? setVotes(votes+1) : setVotes(votes-1)
+    if(type === 'inc'){
+      setComments(prev=>{
+        [...prev,]
+      })
+    }else{
+
+    }
+  }
+  useEffect(() => {
+    setComments(prev=>prev.sort((a,b)=>(a.score > b.score) ? 1 : -1))
+    console.log(comments)
+  },[comments])
+  const commentElements = comments.sort((a,b)=>(a.score > b.score) ? -1 : 1).map((c) => {
+    const replies = c.replies.map((reply) => {
+      return <div style={{borderLeft:" 2px solid var(--light-gray)", paddingLeft:"20px", marginLeft: "25px"}}><Comment key={reply.id + reply.content} comment={reply} type="reply" myComment={reply.user.username === user.username ? true : false} handleVote ={handleVote}/></div>;
+    });
+    return (
+      <div key={c.id} style={{display:"flex", flexDirection: "column",alignItems: "center", width:"100%"}}>
+        <Comment  comment={c} myComment={c.user.username === user.username ? true : false} handleVote ={handleVote}/>
+        {c.replies.length > 0 && replies}
+      </div>
+    );
+  })
   return (
     <Container className="App">
-      {comments.map((c) => {
-        const replies = c.replies.map((reply) => {
-          return <div style={{borderLeft:" 3px solid var(--light-gray)", paddingLeft:"20px", marginLeft: "25px"}}><Comment key={reply.id} comment={reply} type="reply" /></div>;
-        });
-        return (
-          <div key={c.id} style={{display:"flex", flexDirection: "column",alignItems: "flex-end"}}>
-            <Comment  comment={c} />
-            {c.replies.length > 0 && replies}
-          </div>
-        );
-      })}
-      <AddComment>
-        <TextArea placeholder="Add a comment..." resizable='false'/>
+      {commentElements} 
+      <AddComment onSubmit={(event)=>addComment(event)}>
+        <TextArea placeholder="Add a comment..." resizable='false' />
         <ImageSend>
           <Image src={user.image.png}></Image>
-          <Send>SEND</Send>
+          <Send type="submit">SEND</Send>
         </ImageSend>
       </AddComment>
     </Container>
@@ -31,8 +59,9 @@ function App() {
 }
 
 export default App;
-const AddComment = styled.div`
+const AddComment = styled.form`
 width: 100%;
+max-width: 645px;
 display: flex;
 justify-content: center;
 align-items: center;
@@ -89,5 +118,6 @@ const Container = styled.div`
   align-items: center;
   flex-direction: column;
   margin: 50px auto;
-  padding: 0px 20px;
+  padding: 0px 20px; 
+  /* width: 800px; */
 `;

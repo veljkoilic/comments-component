@@ -1,9 +1,10 @@
 import React from "react";
 import styled from "styled-components";
 
-export const Comment = ({comment}) => {
+export const Comment = ({comment, type}) => {
+  console.log(type)
   return (
-    <Container className="container">
+    <Container className="container" style={type==="reply" ? {minWidth:"300px", maxWidth: "500px"}:{minWidth:"400px", maxWidth: "600px"} }>
       <Left>
         <Votes>
           <span>+</span>
@@ -32,13 +33,11 @@ export const Comment = ({comment}) => {
 
 const Container = styled.div`
 display:flex;
-width: 100%;
-min-width: 400px;
-max-width: 600px;
-background-color: #fff;
 border-radius: 5px;
 padding: 20px;
 margin-top: 10px;
+background-color: #fff;
+
 `;
 const Left = styled.div``;
 const Votes = styled.div`

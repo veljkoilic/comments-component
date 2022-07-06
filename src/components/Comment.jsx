@@ -1,19 +1,23 @@
 import React from "react";
+import { useState } from "react";
 import styled from "styled-components";
-import { mobile, tablet } from "../responsive";
+import { mobile } from "../responsive";
 
-export const Comment = ({ comment, type }) => {
-  console.log(type);
+export const Comment = ({ comment, type, myComment, handleVote }) => {
+  const [votes, setVotes] = useState(comment.score)
+
+
+  
   return (
     <Container
       className="container"
-      style={type === "reply" ? { minWidth: "200px", maxWidth: "500px" } : { minWidth: "300px", maxWidth: "600px" }}
+      style={type === "reply" ? { minWidth: "200px", maxWidth:"500px"} : { minWidth: "300px", maxWidth:"600px" }}
     >
       <Left>
         <Votes>
-          <span>+</span>
+          <span onClick={()=>handleVote("inc")}>+</span>
           <span>{comment.score}</span>
-          <span>-</span>
+          <span onClick={()=>handleVote("dec")}>-</span>
         </Votes>
         <TopActions className="left">
           <Reply>
@@ -27,12 +31,14 @@ export const Comment = ({ comment, type }) => {
           <UserAndDate>
             <img src={comment.user.image.png} alt="" />
             <span>{comment.user.username}</span>
+            {myComment && <span className="you">You</span>}
             <span>{comment.createdAt}</span>
           </UserAndDate>
           <TopActions>
             <Reply>
               <img src="./images/icon-reply.svg" alt="reply icon" />
               <span>Reply</span>
+              {/* OVDE */}
             </Reply>
           </TopActions>
         </Top>
@@ -41,13 +47,14 @@ export const Comment = ({ comment, type }) => {
     </Container>
   );
 };
-
 const Container = styled.div`
   display: flex;
   border-radius: 5px;
-  padding: 20px;
+  padding: 10px;
   margin-top: 10px;
   background-color: #fff;
+  width: 100%;
+  box-sizing: border-box;
   ${mobile({
     flexDirection: "column-reverse",
   })}
@@ -83,6 +90,7 @@ const Votes = styled.div`
   span {
     background: var(--very-light-gray);
     padding: 5px 10px;
+    user-select: none;
     ${mobile({
       padding:" 8px 12px",
       marginTop: "5px"
@@ -128,6 +136,7 @@ const Votes = styled.div`
 const Content = styled.div`
   display: flex;
   flex-direction: column;
+  width: 90%;
 `;
 const Top = styled.div`
   display: flex;
@@ -137,6 +146,15 @@ const Top = styled.div`
 const UserAndDate = styled.div`
   display: flex;
   align-items: center;
+  .you{
+    display: flex;
+    padding: 3px 7px;
+    margin-left: 7px;
+    border-radius: 3px;
+    background-color: var(--moderate-blue);
+    color: #fff;
+    font-size: 10px;
+  }
   img {
     width: 30px;
     height: 30px;
@@ -182,5 +200,8 @@ const Reply = styled.button`
   }
 `;
 const Bottom = styled.div`
-  padding: 10px 15px 0px 15px;
+width: 80%;
+  max-width: 600px;
+  padding: 10px 15px 10px 15px;
+  word-wrap: break-word;
 `;

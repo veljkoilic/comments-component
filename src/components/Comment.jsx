@@ -3,43 +3,44 @@ import { useState } from "react";
 import styled from "styled-components";
 import { mobile } from "../responsive";
 
-export const Comment = ({ comment, type, myComment, handleVote, parentComment }) => {
+export const Comment = ({ comment, type, myComment, handleVote, parentComment, user, addReply }) => {
+  const [replyIsOpen, setReplyIsOpen] = useState(false);
+  const [replyData, setReplyData] = useState({
+    content: `@${comment.user.username}`,
+    createdAt: "just now",
+    score: 0,
+    replyingTo: comment.user.username,
+    user
+  });
+  const updateReply = (event) => {
+    const value = event.target.value 
+    console.log(replyData)
+    setReplyData((prev)=> {
+      return {...prev, content: value}
+     })
+  }
   return (
-    <Container
-      className="container"
-      style={type === "reply" ? { minWidth: "200px", maxWidth: "500px" } : { minWidth: "300px", maxWidth: "600px" }}
-    >
-      <Left>
-        <Votes>
-          <span onClick={() => handleVote("inc", comment.id, type, parentComment)}>+</span>
-          <span>{comment.score}</span>
-          <span onClick={() => handleVote("dec", comment.id, type, parentComment)}>-</span>
-        </Votes>
-        <TopActions className="left">
-          <Reply>
-            <img src="./images/icon-reply.svg" alt="reply icon" />
-            <span>Reply</span>
-          </Reply>
-        </TopActions>
-      </Left>
-      <Content>
-        <Top>
-          <UserAndDate>
-            <img src={comment.user.image.png} alt="" />
-            <span>{comment.user.username}</span>
-            {myComment && <span className="you">You</span>}
-            <span>{comment.createdAt}</span>
-          </UserAndDate>
+    <>
+      <Container
+        className="container"
+        style={type === "reply" ? { minWidth: "200px", maxWidth: "500px" } : { minWidth: "300px", maxWidth: "600px" }}
+      >
+        <Left>
+          <Votes>
+            <span onClick={() => handleVote("inc", comment.id, type, parentComment)}>+</span>
+            <span>{comment.score}</span>
+            <span onClick={() => handleVote("dec", comment.id, type, parentComment)}>-</span>
+          </Votes>
           {!myComment && (
-            <TopActions>
+            <TopActions className="left">
               <Reply>
                 <img src="./images/icon-reply.svg" alt="reply icon" />
-                <span>Reply</span>
+                <span onClick={() => setReplyIsOpen(!replyIsOpen)}>Reply</span>
               </Reply>
             </TopActions>
           )}
           {myComment && (
-            <TopActions>
+            <TopActions className="left">
               <Delete>
                 <img src="./images/icon-delete.svg" alt="reply icon" />
                 <span>Delete</span>
@@ -50,10 +51,52 @@ export const Comment = ({ comment, type, myComment, handleVote, parentComment })
               </Edit>
             </TopActions>
           )}
-        </Top>
-        <Bottom>{comment.content}</Bottom>
-      </Content>
-    </Container>
+        </Left>
+        <Content>
+          <Top>
+            <UserAndDate>
+              <img src={comment.user.image.png} alt="" />
+              <span>{comment.user.username}</span>
+              {myComment && <span className="you">You</span>}
+              <span>{comment.createdAt}</span>
+            </UserAndDate>
+            {!myComment && (
+              <TopActions>
+                <Reply>
+                  <img src="./images/icon-reply.svg" alt="reply icon" />
+                  <span onClick={() => setReplyIsOpen(!replyIsOpen)}>Reply</span>
+                </Reply>
+              </TopActions>
+            )}
+            {myComment && (
+              <TopActions>
+                <Delete>
+                  <img src="./images/icon-delete.svg" alt="reply icon" />
+                  <span>Delete</span>
+                </Delete>
+                <Edit>
+                  <img src="./images/icon-edit.svg" alt="reply icon" />
+                  <span>Edit</span>
+                </Edit>
+              </TopActions>
+            )}
+          </Top>
+          <Bottom>
+            <span className="user">{comment.replyingTo && "@" + comment.replyingTo} </span>
+            {comment.replyingTo === undefined ? comment.content :  comment.content.substring(comment.replyingTo.length+1 , comment.content.length)}
+          </Bottom>
+        </Content>
+      </Container>
+      {replyIsOpen && (
+        <AddComment  onSubmit={(event) => {addReply(event, parentComment, replyData); setReplyIsOpen(!replyIsOpen)}}>
+          <TextArea value={replyData.content} resizable="false" onChange={(e)=>updateReply(e)}/>
+          <ImageSend>
+            <Image src={user.image.png}></Image>
+            <Send type="submit">REPLY</Send>
+          </ImageSend>
+        </AddComment>
+      )}
+    </>
   );
 };
 const Container = styled.div`
@@ -180,7 +223,7 @@ const UserAndDate = styled.div`
   }
 `;
 const TopActions = styled.div`
-display: flex;
+  display: flex;
   button {
     display: block;
     ${mobile({
@@ -189,7 +232,7 @@ display: flex;
   }
 `;
 const Reply = styled.button`
-  background-color: #fff;
+  background-color: transparent;
   border: none;
   color: var(--moderate-blue);
   font-weight: 700;
@@ -209,14 +252,71 @@ const Reply = styled.button`
   }
 `;
 const Delete = styled(Reply)`
-  color: var(--soft-red)
+  color: var(--soft-red);
 `;
 const Edit = styled(Reply)`
-  color: var(--moderate-blue)
-`
+  color: var(--moderate-blue);
+`;
 const Bottom = styled.div`
   width: 80%;
-  max-width: 600px;
   padding: 10px 15px 10px 15px;
   word-wrap: break-word;
+  .user {
+    color: var(--moderate-blue);
+    font-weight: bold;
+  }
+`;
+const AddComment = styled.form`
+  width: 100%;
+  max-width: 600px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 15px;
+  box-sizing: border-box;
+  margin-top: 10px;
+`;
+const TextArea = styled.textarea`
+  resize: none;
+  width: 90%;
+  height: 50px;
+  border: 1px solid var(--light-gray);
+  border-radius: 5px;
+  font-family: "Rubik", sans-serif;
+  font-size: 12px;
+  padding: 10px 10px;
+  margin-bottom: 20px;
+  :focus {
+    outline: none;
+    border: 1px solid var(--light-grayish-blue);
+  }
+`;
+const ImageSend = styled.div`
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 5px;
+  box-sizing: border-box;
+  justify-content: space-between;
+`;
+const Image = styled.img`
+  width: 25px;
+  height: 25px;
+`;
+const Send = styled.button`
+  background-color: var(--moderate-blue);
+  color: #fff;
+  padding: 10px 25px;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  &:hover {
+    opacity: 0.5;
+    cursor: pointer;
+  }
 `;

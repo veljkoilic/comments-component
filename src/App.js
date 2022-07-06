@@ -19,19 +19,54 @@ function App() {
         replies: []
     }]})
   }
-  const handleVote = (type) => {
-    type === "inc" ? setVotes(votes+1) : setVotes(votes-1)
+  const handleVote = (type, id, commentType) => {
+
     if(type === 'inc'){
       setComments(prev=>{
-        [...prev,]
+        //trazi index od idja onog koji triggeruje funkciju, onda slice(0, index) spread slice(index+1)
+        if(commentType !== 'reply'){
+          let index =  prev.indexOf(prev.find(e=>e.id === id))
+          console.log(index)
+          return [
+            ...prev.slice(0, index),
+            {...prev[index], score: prev[index].score + 1},
+            ...prev.slice(index+1)
+           ]
+        }else{
+          let index =  prev.indexOf(prev.find(e=>e.id === id))
+          console.log(index)
+          return [
+            ...prev.slice(0, index),
+            {...prev[index], score: prev[index].score + 1},
+            ...prev.slice(index+1)
+           ]
+        }
       })
     }else{
-
+      setComments(prev=>{
+        //trazi index od idja onog koji triggeruje funkciju, onda slice(0, index) spread slice(index+1)
+        if(commentType !== 'reply'){
+          let index =  prev.indexOf(prev.find(e=>e.id === id))
+          console.log(index)
+          return [
+            ...prev.slice(0, index),
+            {...prev[index], score: prev[index].score - 1},
+            ...prev.slice(index+1)
+           ]
+        }else{
+          let index =  prev.indexOf(prev.find(e=>e.id === id))
+          console.log(index)
+          return [
+            ...prev.slice(0, index),
+            {...prev[index], score: prev[index].score - 1},
+            ...prev.slice(index+1)
+           ]
+        }
+      })
     }
   }
   useEffect(() => {
     setComments(prev=>prev.sort((a,b)=>(a.score > b.score) ? 1 : -1))
-    console.log(comments)
   },[comments])
   const commentElements = comments.sort((a,b)=>(a.score > b.score) ? -1 : 1).map((c) => {
     const replies = c.replies.map((reply) => {

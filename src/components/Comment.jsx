@@ -3,18 +3,17 @@ import { useState } from "react";
 import styled from "styled-components";
 import { mobile } from "../responsive";
 
-export const Comment = ({ comment, type, myComment, handleVote, parentComment}) => {
- 
+export const Comment = ({ comment, type, myComment, handleVote, parentComment }) => {
   return (
     <Container
       className="container"
-      style={type === "reply" ? { minWidth: "200px", maxWidth:"500px"} : { minWidth: "300px", maxWidth:"600px" }}
+      style={type === "reply" ? { minWidth: "200px", maxWidth: "500px" } : { minWidth: "300px", maxWidth: "600px" }}
     >
       <Left>
         <Votes>
-          <span onClick={()=>handleVote("inc", comment.id, type, parentComment)}>+</span>
+          <span onClick={() => handleVote("inc", comment.id, type, parentComment)}>+</span>
           <span>{comment.score}</span>
-          <span onClick={()=>handleVote("dec", comment.id, type, parentComment)}>-</span>
+          <span onClick={() => handleVote("dec", comment.id, type, parentComment)}>-</span>
         </Votes>
         <TopActions className="left">
           <Reply>
@@ -31,13 +30,26 @@ export const Comment = ({ comment, type, myComment, handleVote, parentComment}) 
             {myComment && <span className="you">You</span>}
             <span>{comment.createdAt}</span>
           </UserAndDate>
-          <TopActions>
-            <Reply>
-              <img src="./images/icon-reply.svg" alt="reply icon" />
-              <span>Reply</span>
-              {/* OVDE */}
-            </Reply>
-          </TopActions>
+          {!myComment && (
+            <TopActions>
+              <Reply>
+                <img src="./images/icon-reply.svg" alt="reply icon" />
+                <span>Reply</span>
+              </Reply>
+            </TopActions>
+          )}
+          {myComment && (
+            <TopActions>
+              <Delete>
+                <img src="./images/icon-delete.svg" alt="reply icon" />
+                <span>Delete</span>
+              </Delete>
+              <Edit>
+                <img src="./images/icon-edit.svg" alt="reply icon" />
+                <span>Edit</span>
+              </Edit>
+            </TopActions>
+          )}
         </Top>
         <Bottom>{comment.content}</Bottom>
       </Content>
@@ -69,14 +81,14 @@ const Left = styled.div`
     display: "flex",
     justifyContent: "space-between",
   })}
-  .left{
-  button{
-    display: none;
-    ${mobile({
-      display: "block"
-    })}
+  .left {
+    button {
+      display: none;
+      ${mobile({
+        display: "block",
+      })}
+    }
   }
-}
 `;
 const Votes = styled.div`
   display: flex;
@@ -89,8 +101,8 @@ const Votes = styled.div`
     padding: 5px 10px;
     user-select: none;
     ${mobile({
-      padding:" 8px 12px",
-      marginTop: "5px"
+      padding: " 8px 12px",
+      marginTop: "5px",
     })}
     display: flex;
     justify-content: center;
@@ -143,7 +155,7 @@ const Top = styled.div`
 const UserAndDate = styled.div`
   display: flex;
   align-items: center;
-  .you{
+  .you {
     display: flex;
     padding: 3px 7px;
     margin-left: 7px;
@@ -168,13 +180,13 @@ const UserAndDate = styled.div`
   }
 `;
 const TopActions = styled.div`
-  button{
+display: flex;
+  button {
     display: block;
     ${mobile({
-      display: "none"
+      display: "none",
     })}
   }
-
 `;
 const Reply = styled.button`
   background-color: #fff;
@@ -196,8 +208,14 @@ const Reply = styled.button`
     padding: 0 5px;
   }
 `;
+const Delete = styled(Reply)`
+  color: var(--soft-red)
+`;
+const Edit = styled(Reply)`
+  color: var(--moderate-blue)
+`
 const Bottom = styled.div`
-width: 80%;
+  width: 80%;
   max-width: 600px;
   padding: 10px 15px 10px 15px;
   word-wrap: break-word;

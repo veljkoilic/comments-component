@@ -12,6 +12,7 @@
   --very-light-gray: hsl(228, 33%, 97%);
 }
 body {
+  background-color: var(--very-light-gray);
   margin: 0;
   font-size: 16px;
   font-family: 'Rubik', sans-serif;

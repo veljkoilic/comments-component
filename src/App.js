@@ -22,25 +22,25 @@ function App() {
         },
       ];
     });
+    event.target.firstChild.value = "";
   };
   const addReply = (event, parentComment, reply) => {
-    event.preventDefault()
-    setComments(prev=>{
+    event.preventDefault();
+    setComments((prev) => {
       let parentIndex = prev.indexOf(prev.find((e) => e.id === parentComment));
-      let index = prev[parentIndex].replies.indexOf(prev[parentIndex].replies.find((e) => e.id === parentComment));
-      console.log(reply)
+      let index = prev[parentIndex].replies.indexOf(
+        prev[parentIndex].replies.find((e) => e.id === parentComment)
+      );
       return [
         ...prev.slice(0, parentIndex),
         {
           ...prev[parentIndex],
-          replies: [
-            ...prev[parentIndex].replies, reply
-          ]            
+          replies: [...prev[parentIndex].replies, reply],
         },
         ...prev.slice(parentIndex + 1),
       ];
-    })
-  }
+    });
+  };
   const handleVote = (type, id, commentType, parentComment = null) => {
     // INCREASE
     if (type === "inc") {
@@ -49,21 +49,33 @@ function App() {
         if (commentType !== "reply") {
           let index = prev.indexOf(prev.find((e) => e.id === id));
           console.log(index);
-          return [...prev.slice(0, index), { ...prev[index], score: prev[index].score + 1 }, ...prev.slice(index + 1)];
+          return [
+            ...prev.slice(0, index),
+            { ...prev[index], score: prev[index].score + 1 },
+            ...prev.slice(index + 1),
+          ];
           //  if the comment is a reply
           //take the parent index, find the id of the comment inside that parents replies array.
         } else {
-          let parentIndex = prev.indexOf(prev.find((e) => e.id === parentComment));
-          let index = prev[parentIndex].replies.indexOf(prev[parentIndex].replies.find((e) => e.id === id));
+          let parentIndex = prev.indexOf(
+            prev.find((e) => e.id === parentComment)
+          );
+          let index = prev[parentIndex].replies.indexOf(
+            prev[parentIndex].replies.find((e) => e.id === id)
+          );
           return [
             ...prev.slice(0, parentIndex),
             {
               ...prev[parentIndex],
               replies: [
                 ...prev[parentIndex].replies.slice(0, index),
-                { ...prev[parentIndex].replies[index], score: prev[parentIndex].replies[index].score + 1 },
-                ...prev[parentIndex].replies.slice(index+1),
-              ]            },
+                {
+                  ...prev[parentIndex].replies[index],
+                  score: prev[parentIndex].replies[index].score + 1,
+                },
+                ...prev[parentIndex].replies.slice(index + 1),
+              ],
+            },
             ...prev.slice(parentIndex + 1),
           ];
         }
@@ -75,21 +87,32 @@ function App() {
         if (commentType !== "reply") {
           let index = prev.indexOf(prev.find((e) => e.id === id));
           console.log(index);
-          return [...prev.slice(0, index), { ...prev[index], score: prev[index].score - 1 }, ...prev.slice(index + 1)];
+          return [
+            ...prev.slice(0, index),
+            { ...prev[index], score: prev[index].score - 1 },
+            ...prev.slice(index + 1),
+          ];
           //  if the comment is a reply
           //take the parent index, find the id of the comment inside that parents replies array.
         } else {
-          let parentIndex = prev.indexOf(prev.find((e) => e.id === parentComment));
-          let index = prev[parentIndex].replies.indexOf(prev[parentIndex].replies.find((e) => e.id === id));
+          let parentIndex = prev.indexOf(
+            prev.find((e) => e.id === parentComment)
+          );
+          let index = prev[parentIndex].replies.indexOf(
+            prev[parentIndex].replies.find((e) => e.id === id)
+          );
           return [
             ...prev.slice(0, parentIndex),
             {
               ...prev[parentIndex],
               replies: [
                 ...prev[parentIndex].replies.slice(0, index),
-                { ...prev[parentIndex].replies[index], score: prev[parentIndex].replies[index].score - 1 },
-                ...prev[parentIndex].replies.slice(index+1),
-              ]
+                {
+                  ...prev[parentIndex].replies[index],
+                  score: prev[parentIndex].replies[index].score - 1,
+                },
+                ...prev[parentIndex].replies.slice(index + 1),
+              ],
             },
             ...prev.slice(parentIndex + 1),
           ];
@@ -97,6 +120,33 @@ function App() {
       });
     }
   };
+
+  const deleteComment = (commentID, replyID, type) => {
+    if (type !== 'reply') {
+      setComments((prev) => {
+        let index = prev.indexOf(prev.find((e) => e.id === commentID));
+
+
+        return [...prev.slice(0, index), ...prev.slice(index + 1)];
+      });
+    } else {
+      setComments((prev) => {
+        let parentIndex = prev.indexOf(prev.find((e) => e.id === commentID));
+        let index = prev[parentIndex].replies.indexOf(
+          prev[parentIndex].replies.find((e) => e.id === replyID))
+
+        return[
+          ...prev.slice(0, parentIndex),
+          {...prev[parentIndex], replies:[
+            ...prev[parentIndex].replies.slice(0, index),
+            ...prev[parentIndex].replies.slice(index + 1),
+          ] },
+          ...prev.slice(parentIndex+1)
+        ]
+      });
+    }
+  };
+
   useEffect(() => {
     setComments((prev) => prev.sort((a, b) => (a.score > b.score ? 1 : -1)));
   }, [comments]);
@@ -105,8 +155,14 @@ function App() {
     .map((c) => {
       const replies = c.replies.map((reply) => {
         return (
-          <div key={`${c.id}-${reply.id}`}
-          style={{ borderLeft: " 2px solid var(--light-gray)", paddingLeft: "20px", marginLeft: "25px" }}>
+          <div
+            key={`${c.id}-${reply.id}`}
+            style={{
+              borderLeft: " 2px solid var(--light-gray)",
+              paddingLeft: "20px",
+              marginLeft: "25px",
+            }}
+          >
             <Comment
               comment={reply}
               type="reply"
@@ -115,13 +171,30 @@ function App() {
               parentComment={c.id}
               user={user}
               addReply={addReply}
+              deleteComment={deleteComment}
             />
           </div>
         );
       });
       return (
-        <div key={c.id} style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%" }}>
-          <Comment comment={c} myComment={c.user.username === user.username ? true : false} handleVote={handleVote} user={user} addReply={addReply} parentComment={c.id}/>
+        <div
+          key={c.id}
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            width: "100%",
+          }}
+        >
+          <Comment
+            comment={c}
+            myComment={c.user.username === user.username ? true : false}
+            handleVote={handleVote}
+            user={user}
+            addReply={addReply}
+            parentComment={c.id}
+            deleteComment={deleteComment}
+          />
           {c.replies.length > 0 && replies}
         </div>
       );

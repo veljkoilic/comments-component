@@ -11,6 +11,7 @@ export const Comment = ({
   parentComment,
   user,
   addReply,
+  deleteComment,
 }) => {
   const [replyIsOpen, setReplyIsOpen] = useState(false);
   const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -23,7 +24,6 @@ export const Comment = ({
   });
   const updateReply = (event) => {
     const value = event.target.value;
-    console.log(replyData);
     setReplyData((prev) => {
       return { ...prev, content: value };
     });
@@ -36,7 +36,7 @@ export const Comment = ({
             setModalIsOpen(!modalIsOpen);
           }}
         >
-          <ModalBody onClick={(e)=>e.stopPropagation()}>
+          <ModalBody onClick={(e) => e.stopPropagation()}>
             <Title>Delete Comment</Title>
             <Text>
               Are you sure you want to delete this comment? This will remove the
@@ -50,7 +50,7 @@ export const Comment = ({
               >
                 NO, Cancel
               </CancelButton>
-              <DeleteButton>YES, Delete</DeleteButton>
+              <DeleteButton onClick={()=>{deleteComment(parentComment,comment.id, type ); setModalIsOpen(!modalIsOpen);}}>YES, Delete</DeleteButton>
             </ModalButtons>
           </ModalBody>
         </Modal>
@@ -155,6 +155,7 @@ export const Comment = ({
           onSubmit={(event) => {
             addReply(event, parentComment, replyData);
             setReplyIsOpen(!replyIsOpen);
+            setReplyData(prev=>{return {...prev,content: `@${comment.user.username}` }})
           }}
         >
           <TextArea

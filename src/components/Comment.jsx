@@ -98,8 +98,8 @@ export const Comment = ({
         className="container"
         style={
           type === "reply"
-            ? { minWidth: "200px", maxWidth: "500px" }
-            : { minWidth: "300px", maxWidth: "600px" }
+            ? { minWidth: "200px", maxWidth: "500px", width:"auto" }
+            : { minWidth: "300px", maxWidth: "600px", width:"auto" }
         }
       >
         <Left>
@@ -376,7 +376,7 @@ const Edit = styled(Reply)`
   color: var(--moderate-blue);
 `;
 const Bottom = styled.div`
-  width: 80%;
+  max-width:500px;
   padding: 10px 15px 10px 15px;
   word-wrap: break-word;
   .user {

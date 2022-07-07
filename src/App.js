@@ -5,7 +5,6 @@ import data from "./data.json";
 
 function App() {
   if(localStorage.getItem("comments") === null){
-    console.log("null je")
     localStorage.setItem('comments', JSON.stringify(data.comments))
     
   }
@@ -21,7 +20,7 @@ function App() {
         {
           id: Math.max(...prev.map((o) => o.id)) + 1,
           content: textValue,
-          createdAt: "just now",
+          createdAt: Date.now(),
           score: 0,
           user,
           replies: [],
@@ -54,7 +53,6 @@ function App() {
         //If the comment is a parent comment, find it through the id of the comment and change it through the index
         if (commentType !== "reply") {
           let index = prev.indexOf(prev.find((e) => e.id === id));
-          console.log(index);
           return [
             ...prev.slice(0, index),
             { ...prev[index], score: prev[index].score + 1 },
@@ -92,7 +90,6 @@ function App() {
       setComments((prev) => {
         if (commentType !== "reply") {
           let index = prev.indexOf(prev.find((e) => e.id === id));
-          console.log(index);
           return [
             ...prev.slice(0, index),
             { ...prev[index], score: prev[index].score - 1 },
@@ -159,11 +156,6 @@ function App() {
     if (type !== "reply") {
       setComments((prev) => {
         let index = prev.indexOf(prev.find((e) => e.id === commentID));
-        console.log([
-          ...prev.slice(0, index),
-         {...prev[index], content},
-          ...prev.slice(index + 1),
-        ])
         return [
           ...prev.slice(0, index),
           {...prev[index], content},
@@ -196,7 +188,6 @@ function App() {
   };
 
   useEffect(() => {
-    console.log("lol")
     localStorage.setItem('comments', JSON.stringify(comments));
   }, [comments]);
   const commentElements = comments

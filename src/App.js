@@ -4,7 +4,13 @@ import { Comment } from "./components/Comment";
 import data from "./data.json";
 
 function App() {
-  const [comments, setComments] = useState(data.comments);
+  if(localStorage.getItem("comments") === null){
+    console.log("null je")
+    localStorage.setItem('comments', JSON.stringify(data.comments))
+    
+  }
+  let localComments = JSON.parse(localStorage.getItem("comments")) 
+  const [comments, setComments] = useState(localComments);
   const [user, setUser] = useState(data.currentUser);
   const addComment = (event) => {
     event.preventDefault();
@@ -190,7 +196,8 @@ function App() {
   };
 
   useEffect(() => {
-    setComments((prev) => prev.sort((a, b) => (a.score > b.score ? 1 : -1)));
+    console.log("lol")
+    localStorage.setItem('comments', JSON.stringify(comments));
   }, [comments]);
   const commentElements = comments
     .sort((a, b) => (a.score > b.score ? -1 : 1))

@@ -21,16 +21,16 @@ export const Comment = ({
   const [editingMode, setEditingMode] = useState(false);
   const [editedCommentData, setEditedCommentData] = useState(comment.content)
   const [replyData, setReplyData] = useState({
-    content: `@${comment.user.username}`,
+    content: `${"@" + comment.user.username}`,
     createdAt: Date.now(),
     score: 0,
     replyingTo: comment.user.username,
     user,
   });
   const updateReply = (event) => {
-    const value = event.target.value;
+    let value = event.target.value;
     setReplyData((prev) => {
-      return { ...prev, content: value };
+      return { ...prev, content: value};
     });
   };
   const timeSince  = (date)=>{
@@ -118,9 +118,9 @@ export const Comment = ({
           </Votes>
           {!myComment && (
             <TopActions className="left">
-              <Reply>
+              <Reply onClick={() => setReplyIsOpen(!replyIsOpen)}>
                 <img src="./images/icon-reply.svg" alt="reply icon" />
-                <span onClick={() => setReplyIsOpen(!replyIsOpen)}>Reply</span>
+                <span >Reply</span>
               </Reply>
             </TopActions>
           )}
@@ -151,9 +151,9 @@ export const Comment = ({
             </UserAndDate>
             {!myComment && (
               <TopActions>
-                <Reply>
+                <Reply onClick={() => setReplyIsOpen(!replyIsOpen)}>
                   <img src="./images/icon-reply.svg" alt="reply icon" />
-                  <span onClick={() => setReplyIsOpen(!replyIsOpen)}>
+                  <span >
                     Reply
                   </span>
                 </Reply>
@@ -182,10 +182,7 @@ export const Comment = ({
             </span>
             {comment.replyingTo === undefined
               ? comment.content
-              : comment.content.substring(
-                  0,
-                  comment.content.length
-                )}
+              : comment.content.substring(comment.replyingTo.length +1)}
           </Bottom>}
 
           {editingMode && <Bottom style={{display:"flex", alignItems:"center", width:"100%", justifyContent:'space-between', flexDirection:"column", boxSizing:'border-box'}}>

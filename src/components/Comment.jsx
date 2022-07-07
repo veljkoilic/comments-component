@@ -3,6 +3,8 @@ import { useState } from "react";
 import styled from "styled-components";
 import { mobile } from "../responsive";
 
+//onSubmit={()=>{editComment(parentComment,comment.id, type, newText )}
+
 export const Comment = ({
   comment,
   type,
@@ -12,9 +14,12 @@ export const Comment = ({
   user,
   addReply,
   deleteComment,
+  editComment,
 }) => {
   const [replyIsOpen, setReplyIsOpen] = useState(false);
   const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [editingMode, setEditingMode] = useState(false);
+  const [editedCommentData, setEditedCommentData] = useState(comment.content)
   const [replyData, setReplyData] = useState({
     content: `@${comment.user.username}`,
     createdAt: "just now",
@@ -50,7 +55,14 @@ export const Comment = ({
               >
                 NO, Cancel
               </CancelButton>
-              <DeleteButton onClick={()=>{deleteComment(parentComment,comment.id, type ); setModalIsOpen(!modalIsOpen);}}>YES, Delete</DeleteButton>
+              <DeleteButton
+                onClick={() => {
+                  deleteComment(parentComment, comment.id, type);
+                  setModalIsOpen(!modalIsOpen);
+                }}
+              >
+                YES, Delete
+              </DeleteButton>
             </ModalButtons>
           </ModalBody>
         </Modal>
@@ -130,24 +142,31 @@ export const Comment = ({
                   <img src="./images/icon-delete.svg" alt="reply icon" />
                   <span>Delete</span>
                 </Delete>
-                <Edit>
+                <Edit onClick={() => setEditingMode(!editingMode)}>
                   <img src="./images/icon-edit.svg" alt="reply icon" />
                   <span>Edit</span>
                 </Edit>
               </TopActions>
             )}
           </Top>
-          <Bottom>
+          {!editingMode && <Bottom>
             <span className="user">
               {comment.replyingTo && "@" + comment.replyingTo}{" "}
             </span>
             {comment.replyingTo === undefined
               ? comment.content
               : comment.content.substring(
-                  comment.replyingTo.length + 1,
+                  0,
                   comment.content.length
                 )}
-          </Bottom>
+          </Bottom>}
+
+          {editingMode && <Bottom style={{display:"flex", alignItems:"center", width:"100%", justifyContent:'space-between', flexDirection:"column", boxSizing:'border-box'}}>
+            <TextArea style={{minWidth: "100%", height:"100px", fontSize: "14px"}} value={editedCommentData} onChange={(e)=>{setEditedCommentData(e.target.value)}}></TextArea>
+            <Send style={{alignSelf: "flex-end" }} onClick={()=>{editComment(parentComment,comment.id, type,editedCommentData); setEditingMode(!editingMode)}}>Update</Send>
+          </Bottom>}
+
+
         </Content>
       </Container>
       {replyIsOpen && (
@@ -155,7 +174,9 @@ export const Comment = ({
           onSubmit={(event) => {
             addReply(event, parentComment, replyData);
             setReplyIsOpen(!replyIsOpen);
-            setReplyData(prev=>{return {...prev,content: `@${comment.user.username}` }})
+            setReplyData((prev) => {
+              return { ...prev, content: `@${comment.user.username}` };
+            });
           }}
         >
           <TextArea

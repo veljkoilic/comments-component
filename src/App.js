@@ -121,11 +121,10 @@ function App() {
     }
   };
 
-  const deleteComment = (commentID, replyID, type) => {
-    if (type !== 'reply') {
+  const deleteComment = (commentID, replyID, type, content) => {
+    if (type !== "reply") {
       setComments((prev) => {
         let index = prev.indexOf(prev.find((e) => e.id === commentID));
-
 
         return [...prev.slice(0, index), ...prev.slice(index + 1)];
       });
@@ -133,16 +132,59 @@ function App() {
       setComments((prev) => {
         let parentIndex = prev.indexOf(prev.find((e) => e.id === commentID));
         let index = prev[parentIndex].replies.indexOf(
-          prev[parentIndex].replies.find((e) => e.id === replyID))
+          prev[parentIndex].replies.find((e) => e.id === replyID)
+        );
 
-        return[
+        return [
           ...prev.slice(0, parentIndex),
-          {...prev[parentIndex], replies:[
-            ...prev[parentIndex].replies.slice(0, index),
-            ...prev[parentIndex].replies.slice(index + 1),
-          ] },
-          ...prev.slice(parentIndex+1)
-        ]
+          {
+            ...prev[parentIndex],
+            replies: [
+              ...prev[parentIndex].replies.slice(0, index),
+              ...prev[parentIndex].replies.slice(index + 1),
+            ],
+          },
+          ...prev.slice(parentIndex + 1),
+        ];
+      });
+    }
+  };
+  const editComment = (commentID, replyID, type, content) => {
+    if (type !== "reply") {
+      setComments((prev) => {
+        let index = prev.indexOf(prev.find((e) => e.id === commentID));
+        console.log([
+          ...prev.slice(0, index),
+         {...prev[index], content},
+          ...prev.slice(index + 1),
+        ])
+        return [
+          ...prev.slice(0, index),
+          {...prev[index], content},
+          ...prev.slice(index + 1),
+        ];
+      });
+    } else {
+      setComments((prev) => {
+        let parentIndex = prev.indexOf(prev.find((e) => e.id === commentID));
+        let index = prev[parentIndex].replies.indexOf(
+          prev[parentIndex].replies.find((e) => e.id === replyID)
+        );
+
+        return [
+          ...prev.slice(0, parentIndex),
+          {
+            ...prev[parentIndex],
+            replies: [
+              ...prev[parentIndex].replies.slice(0, index),
+
+              { ...prev[parentIndex].replies[index], content },
+
+              ...prev[parentIndex].replies.slice(index + 1),
+            ],
+          },
+          ...prev.slice(parentIndex + 1),
+        ];
       });
     }
   };
@@ -172,6 +214,7 @@ function App() {
               user={user}
               addReply={addReply}
               deleteComment={deleteComment}
+              editComment={editComment}
             />
           </div>
         );
@@ -194,6 +237,7 @@ function App() {
             addReply={addReply}
             parentComment={c.id}
             deleteComment={deleteComment}
+            editComment={editComment}
           />
           {c.replies.length > 0 && replies}
         </div>

@@ -3,33 +3,79 @@ import { useState } from "react";
 import styled from "styled-components";
 import { mobile } from "../responsive";
 
-export const Comment = ({ comment, type, myComment, handleVote, parentComment, user, addReply }) => {
+export const Comment = ({
+  comment,
+  type,
+  myComment,
+  handleVote,
+  parentComment,
+  user,
+  addReply,
+}) => {
   const [replyIsOpen, setReplyIsOpen] = useState(false);
+  const [modalIsOpen, setModalIsOpen] = useState(false);
   const [replyData, setReplyData] = useState({
     content: `@${comment.user.username}`,
     createdAt: "just now",
     score: 0,
     replyingTo: comment.user.username,
-    user
+    user,
   });
   const updateReply = (event) => {
-    const value = event.target.value 
-    console.log(replyData)
-    setReplyData((prev)=> {
-      return {...prev, content: value}
-     })
-  }
+    const value = event.target.value;
+    console.log(replyData);
+    setReplyData((prev) => {
+      return { ...prev, content: value };
+    });
+  };
   return (
     <>
+      {modalIsOpen && (
+        <Modal
+          onClick={(e) => {
+            setModalIsOpen(!modalIsOpen);
+          }}
+        >
+          <ModalBody onClick={(e)=>e.stopPropagation()}>
+            <Title>Delete Comment</Title>
+            <Text>
+              Are you sure you want to delete this comment? This will remove the
+              comment and can't be undone
+            </Text>
+            <ModalButtons>
+              <CancelButton
+                onClick={() => {
+                  setModalIsOpen(!modalIsOpen);
+                }}
+              >
+                NO, Cancel
+              </CancelButton>
+              <DeleteButton>YES, Delete</DeleteButton>
+            </ModalButtons>
+          </ModalBody>
+        </Modal>
+      )}
       <Container
         className="container"
-        style={type === "reply" ? { minWidth: "200px", maxWidth: "500px" } : { minWidth: "300px", maxWidth: "600px" }}
+        style={
+          type === "reply"
+            ? { minWidth: "200px", maxWidth: "500px" }
+            : { minWidth: "300px", maxWidth: "600px" }
+        }
       >
         <Left>
           <Votes>
-            <span onClick={() => handleVote("inc", comment.id, type, parentComment)}>+</span>
+            <span
+              onClick={() => handleVote("inc", comment.id, type, parentComment)}
+            >
+              +
+            </span>
             <span>{comment.score}</span>
-            <span onClick={() => handleVote("dec", comment.id, type, parentComment)}>-</span>
+            <span
+              onClick={() => handleVote("dec", comment.id, type, parentComment)}
+            >
+              -
+            </span>
           </Votes>
           {!myComment && (
             <TopActions className="left">
@@ -41,7 +87,11 @@ export const Comment = ({ comment, type, myComment, handleVote, parentComment, u
           )}
           {myComment && (
             <TopActions className="left">
-              <Delete>
+              <Delete
+                onClick={() => {
+                  setModalIsOpen(!modalIsOpen);
+                }}
+              >
                 <img src="./images/icon-delete.svg" alt="reply icon" />
                 <span>Delete</span>
               </Delete>
@@ -64,13 +114,19 @@ export const Comment = ({ comment, type, myComment, handleVote, parentComment, u
               <TopActions>
                 <Reply>
                   <img src="./images/icon-reply.svg" alt="reply icon" />
-                  <span onClick={() => setReplyIsOpen(!replyIsOpen)}>Reply</span>
+                  <span onClick={() => setReplyIsOpen(!replyIsOpen)}>
+                    Reply
+                  </span>
                 </Reply>
               </TopActions>
             )}
             {myComment && (
               <TopActions>
-                <Delete>
+                <Delete
+                  onClick={() => {
+                    setModalIsOpen(!modalIsOpen);
+                  }}
+                >
                   <img src="./images/icon-delete.svg" alt="reply icon" />
                   <span>Delete</span>
                 </Delete>
@@ -82,14 +138,30 @@ export const Comment = ({ comment, type, myComment, handleVote, parentComment, u
             )}
           </Top>
           <Bottom>
-            <span className="user">{comment.replyingTo && "@" + comment.replyingTo} </span>
-            {comment.replyingTo === undefined ? comment.content :  comment.content.substring(comment.replyingTo.length+1 , comment.content.length)}
+            <span className="user">
+              {comment.replyingTo && "@" + comment.replyingTo}{" "}
+            </span>
+            {comment.replyingTo === undefined
+              ? comment.content
+              : comment.content.substring(
+                  comment.replyingTo.length + 1,
+                  comment.content.length
+                )}
           </Bottom>
         </Content>
       </Container>
       {replyIsOpen && (
-        <AddComment  onSubmit={(event) => {addReply(event, parentComment, replyData); setReplyIsOpen(!replyIsOpen)}}>
-          <TextArea value={replyData.content} resizable="false" onChange={(e)=>updateReply(e)}/>
+        <AddComment
+          onSubmit={(event) => {
+            addReply(event, parentComment, replyData);
+            setReplyIsOpen(!replyIsOpen);
+          }}
+        >
+          <TextArea
+            value={replyData.content}
+            resizable="false"
+            onChange={(e) => updateReply(e)}
+          />
           <ImageSend>
             <Image src={user.image.png}></Image>
             <Send type="submit">REPLY</Send>
@@ -319,4 +391,47 @@ const Send = styled.button`
     opacity: 0.5;
     cursor: pointer;
   }
+`;
+
+const Modal = styled.div`
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.6);
+  top: 0;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+const ModalBody = styled.div`
+  background-color: #fff;
+  width: 350px;
+  padding: 20px;
+  border-radius: 10px;
+`;
+const Title = styled.h3``;
+const Text = styled.p``;
+
+const ModalButtons = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
+const ModalButton = styled.div`
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 5px;
+  width: 30%;
+  font-weight: bold;
+  &:hover {
+    opacity: 0.6;
+    cursor: pointer;
+  }
+`;
+
+const CancelButton = styled(ModalButton)`
+  background-color: var(--grayish-blue);
+`;
+const DeleteButton = styled(ModalButton)`
+  background-color: var(--soft-red);
 `;

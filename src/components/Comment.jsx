@@ -3,8 +3,6 @@ import { useState } from "react";
 import styled from "styled-components";
 import { mobile } from "../responsive";
 
-//onSubmit={()=>{editComment(parentComment,comment.id, type, newText )}
-
 export const Comment = ({
   comment,
   type,
@@ -19,7 +17,7 @@ export const Comment = ({
   const [replyIsOpen, setReplyIsOpen] = useState(false);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [editingMode, setEditingMode] = useState(false);
-  const [editedCommentData, setEditedCommentData] = useState(comment.content)
+  const [editedCommentData, setEditedCommentData] = useState(comment.content);
   const [replyData, setReplyData] = useState({
     content: `${"@" + comment.user.username}`,
     createdAt: Date.now(),
@@ -30,15 +28,13 @@ export const Comment = ({
   const updateReply = (event) => {
     let value = event.target.value;
     setReplyData((prev) => {
-      return { ...prev, content: value};
+      return { ...prev, content: value };
     });
   };
-  const timeSince  = (date)=>{
-
+  //takes in a timestamp and returns a string in "3 hours ago" format
+  const timeSince = (date) => {
     var seconds = Math.floor((new Date() - date) / 1000);
-  
     var interval = seconds / 31536000;
-  
     if (interval > 1) {
       return Math.floor(interval) + " years";
     }
@@ -59,7 +55,7 @@ export const Comment = ({
       return Math.floor(interval) + " minutes";
     }
     return Math.floor(seconds) + " seconds";
-  }
+  };
   return (
     <>
       {modalIsOpen && (
@@ -70,10 +66,7 @@ export const Comment = ({
         >
           <ModalBody onClick={(e) => e.stopPropagation()}>
             <Title>Delete Comment</Title>
-            <Text>
-              Are you sure you want to delete this comment? This will remove the
-              comment and can't be undone
-            </Text>
+            <Text>Are you sure you want to delete this comment? This will remove the comment and can't be undone</Text>
             <ModalButtons>
               <CancelButton
                 onClick={() => {
@@ -98,29 +91,21 @@ export const Comment = ({
         className="container"
         style={
           type === "reply"
-            ? { minWidth: "200px", maxWidth: "500px", width:"auto" }
-            : { minWidth: "300px", maxWidth: "600px", width:"auto" }
+            ? { minWidth: "200px", maxWidth: "500px", width: "auto" }
+            : { minWidth: "300px", maxWidth: "600px", width: "auto" }
         }
       >
         <Left>
           <Votes>
-            <span
-              onClick={() => handleVote("inc", comment.id, type, parentComment)}
-            >
-              +
-            </span>
+            <span onClick={() => handleVote("inc", comment.id, type, parentComment)}>+</span>
             <span>{comment.score}</span>
-            <span
-              onClick={() => handleVote("dec", comment.id, type, parentComment)}
-            >
-              -
-            </span>
+            <span onClick={() => handleVote("dec", comment.id, type, parentComment)}>-</span>
           </Votes>
           {!myComment && (
             <TopActions className="left">
               <Reply onClick={() => setReplyIsOpen(!replyIsOpen)}>
                 <img src="./images/icon-reply.svg" alt="reply icon" />
-                <span >Reply</span>
+                <span>Reply</span>
               </Reply>
             </TopActions>
           )}
@@ -153,9 +138,7 @@ export const Comment = ({
               <TopActions>
                 <Reply onClick={() => setReplyIsOpen(!replyIsOpen)}>
                   <img src="./images/icon-reply.svg" alt="reply icon" />
-                  <span >
-                    Reply
-                  </span>
+                  <span>Reply</span>
                 </Reply>
               </TopActions>
             )}
@@ -176,21 +159,44 @@ export const Comment = ({
               </TopActions>
             )}
           </Top>
-          {!editingMode && <Bottom>
-            <span className="user">
-              {comment.replyingTo && "@" + comment.replyingTo}{" "}
-            </span>
-            {comment.replyingTo === undefined
-              ? comment.content
-              : comment.content.substring(comment.replyingTo.length +1)}
-          </Bottom>}
+          {!editingMode && (
+            <Bottom>
+              <span className="user">{comment.replyingTo && "@" + comment.replyingTo} </span>
+              {comment.replyingTo === undefined
+                ? comment.content
+                : comment.content.substring(comment.replyingTo.length + 1)}
+            </Bottom>
+          )}
 
-          {editingMode && <Bottom style={{display:"flex", alignItems:"center", width:"100%", justifyContent:'space-between', flexDirection:"column", boxSizing:'border-box'}}>
-            <TextArea style={{minWidth: "100%", height:"100px", fontSize: "14px"}} value={editedCommentData} onChange={(e)=>{setEditedCommentData(e.target.value)}}></TextArea>
-            <Send style={{alignSelf: "flex-end" }} onClick={()=>{editComment(parentComment,comment.id, type,editedCommentData); setEditingMode(!editingMode)}}>Update</Send>
-          </Bottom>}
-
-
+          {editingMode && (
+            <Bottom
+              style={{
+                display: "flex",
+                alignItems: "center",
+                width: "100%",
+                justifyContent: "space-between",
+                flexDirection: "column",
+                boxSizing: "border-box",
+              }}
+            >
+              <TextArea
+                style={{ minWidth: "100%", height: "100px", fontSize: "14px" }}
+                value={editedCommentData}
+                onChange={(e) => {
+                  setEditedCommentData(e.target.value);
+                }}
+              ></TextArea>
+              <Send
+                style={{ alignSelf: "flex-end" }}
+                onClick={() => {
+                  editComment(parentComment, comment.id, type, editedCommentData);
+                  setEditingMode(!editingMode);
+                }}
+              >
+                Update
+              </Send>
+            </Bottom>
+          )}
         </Content>
       </Container>
       {replyIsOpen && (
@@ -203,11 +209,7 @@ export const Comment = ({
             });
           }}
         >
-          <TextArea
-            value={replyData.content}
-            resizable="false"
-            onChange={(e) => updateReply(e)}
-          />
+          <TextArea value={replyData.content} resizable="false" onChange={(e) => updateReply(e)} />
           <ImageSend>
             <Image src={user.image.png}></Image>
             <Send type="submit">REPLY</Send>
@@ -376,7 +378,7 @@ const Edit = styled(Reply)`
   color: var(--moderate-blue);
 `;
 const Bottom = styled.div`
-  max-width:500px;
+  max-width: 500px;
   padding: 10px 15px 10px 15px;
   word-wrap: break-word;
   .user {

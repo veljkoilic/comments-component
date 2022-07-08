@@ -4,11 +4,10 @@ import { Comment } from "./components/Comment";
 import data from "./data.json";
 
 function App() {
-  if(localStorage.getItem("comments") === null){
-    localStorage.setItem('comments', JSON.stringify(data.comments))
-    
+  if (localStorage.getItem("comments") === null) {
+    localStorage.setItem("comments", JSON.stringify(data.comments));
   }
-  let localComments = JSON.parse(localStorage.getItem("comments")) 
+  let localComments = JSON.parse(localStorage.getItem("comments"));
   const [comments, setComments] = useState(localComments);
   const [user, setUser] = useState(data.currentUser);
   const addComment = (event) => {
@@ -33,9 +32,7 @@ function App() {
     event.preventDefault();
     setComments((prev) => {
       let parentIndex = prev.indexOf(prev.find((e) => e.id === parentComment));
-      let index = prev[parentIndex].replies.indexOf(
-        prev[parentIndex].replies.find((e) => e.id === parentComment)
-      );
+      let index = prev[parentIndex].replies.indexOf(prev[parentIndex].replies.find((e) => e.id === parentComment));
       return [
         ...prev.slice(0, parentIndex),
         {
@@ -53,20 +50,12 @@ function App() {
         //If the comment is a parent comment, find it through the id of the comment and change it through the index
         if (commentType !== "reply") {
           let index = prev.indexOf(prev.find((e) => e.id === id));
-          return [
-            ...prev.slice(0, index),
-            { ...prev[index], score: prev[index].score + 1 },
-            ...prev.slice(index + 1),
-          ];
+          return [...prev.slice(0, index), { ...prev[index], score: prev[index].score + 1 }, ...prev.slice(index + 1)];
           //  if the comment is a reply
           //take the parent index, find the id of the comment inside that parents replies array.
         } else {
-          let parentIndex = prev.indexOf(
-            prev.find((e) => e.id === parentComment)
-          );
-          let index = prev[parentIndex].replies.indexOf(
-            prev[parentIndex].replies.find((e) => e.id === id)
-          );
+          let parentIndex = prev.indexOf(prev.find((e) => e.id === parentComment));
+          let index = prev[parentIndex].replies.indexOf(prev[parentIndex].replies.find((e) => e.id === id));
           return [
             ...prev.slice(0, parentIndex),
             {
@@ -90,20 +79,12 @@ function App() {
       setComments((prev) => {
         if (commentType !== "reply") {
           let index = prev.indexOf(prev.find((e) => e.id === id));
-          return [
-            ...prev.slice(0, index),
-            { ...prev[index], score: prev[index].score - 1 },
-            ...prev.slice(index + 1),
-          ];
+          return [...prev.slice(0, index), { ...prev[index], score: prev[index].score - 1 }, ...prev.slice(index + 1)];
           //  if the comment is a reply
           //take the parent index, find the id of the comment inside that parents replies array.
         } else {
-          let parentIndex = prev.indexOf(
-            prev.find((e) => e.id === parentComment)
-          );
-          let index = prev[parentIndex].replies.indexOf(
-            prev[parentIndex].replies.find((e) => e.id === id)
-          );
+          let parentIndex = prev.indexOf(prev.find((e) => e.id === parentComment));
+          let index = prev[parentIndex].replies.indexOf(prev[parentIndex].replies.find((e) => e.id === id));
           return [
             ...prev.slice(0, parentIndex),
             {
@@ -134,18 +115,13 @@ function App() {
     } else {
       setComments((prev) => {
         let parentIndex = prev.indexOf(prev.find((e) => e.id === commentID));
-        let index = prev[parentIndex].replies.indexOf(
-          prev[parentIndex].replies.find((e) => e.id === replyID)
-        );
+        let index = prev[parentIndex].replies.indexOf(prev[parentIndex].replies.find((e) => e.id === replyID));
 
         return [
           ...prev.slice(0, parentIndex),
           {
             ...prev[parentIndex],
-            replies: [
-              ...prev[parentIndex].replies.slice(0, index),
-              ...prev[parentIndex].replies.slice(index + 1),
-            ],
+            replies: [...prev[parentIndex].replies.slice(0, index), ...prev[parentIndex].replies.slice(index + 1)],
           },
           ...prev.slice(parentIndex + 1),
         ];
@@ -156,18 +132,12 @@ function App() {
     if (type !== "reply") {
       setComments((prev) => {
         let index = prev.indexOf(prev.find((e) => e.id === commentID));
-        return [
-          ...prev.slice(0, index),
-          {...prev[index], content},
-          ...prev.slice(index + 1),
-        ];
+        return [...prev.slice(0, index), { ...prev[index], content }, ...prev.slice(index + 1)];
       });
     } else {
       setComments((prev) => {
         let parentIndex = prev.indexOf(prev.find((e) => e.id === commentID));
-        let index = prev[parentIndex].replies.indexOf(
-          prev[parentIndex].replies.find((e) => e.id === replyID)
-        );
+        let index = prev[parentIndex].replies.indexOf(prev[parentIndex].replies.find((e) => e.id === replyID));
 
         return [
           ...prev.slice(0, parentIndex),
@@ -188,7 +158,7 @@ function App() {
   };
 
   useEffect(() => {
-    localStorage.setItem('comments', JSON.stringify(comments));
+    localStorage.setItem("comments", JSON.stringify(comments));
   }, [comments]);
   const commentElements = comments
     .sort((a, b) => (a.score > b.score ? -1 : 1))

@@ -116,11 +116,11 @@ export const Comment = ({
                   setModalIsOpen(!modalIsOpen);
                 }}
               >
-                <img src="./images/icon-delete.svg" alt="reply icon" />
+                <img src="./images/icon-delete.svg" alt="delete icon" />
                 <span>Delete</span>
               </Delete>
-              <Edit>
-                <img src="./images/icon-edit.svg" alt="reply icon" />
+              <Edit  onClick={() => setEditingMode(!editingMode)}>
+                <img src="./images/icon-edit.svg" alt="edit icon" />
                 <span>Edit</span>
               </Edit>
             </TopActions>

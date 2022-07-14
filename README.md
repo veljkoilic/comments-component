@@ -30,7 +30,8 @@ This is a solution to the [Interactive comments section challenge on Frontend Me
 
 ### Screenshot
 
-  
+  [Live Preview](https://veljkoilic.github.io/comments-component/)
+
 
 <img src='https://i.ibb.co/h7SVqLY/Screenshot-from-2022-07-07-12-55-04.png' alt='comment components'/>
 
